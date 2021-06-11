@@ -1,91 +1,123 @@
 import locale
 import random
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.ticker
 import numpy as np
 
 
 # region Functions
 
 
-def get_capital_input() -> int:
+def get_capital() -> int:
+    """
+    Convert the input from user to a capital
+    :return: The capital converted or 10 if cannot convert the input.
+    """
     try:
-        user_input = input("Entrez votre capital (nombre entier) : ")
+        user_input = input('Entrez votre capital de départ (nombre entier) : ')
         return int(user_input)
     except ValueError:
         return 10
 
 
-def get_probability_win_input() -> float:
+def get_win_probability() -> float:
+    """
+    Convert the input from user to a probability of win.
+    :return: The probability of win converted or 0.5 if cannot convert the input.
+    """
     try:
-        user_input = input(
-            'Entrez votre probabilité "p" de gagner ' +
-            '(0.5 = 50% de chance de gagner, utilisez des points comme virgule ' +
-            ': ')
+        user_input = input('Entrez votre probabilité "p" de gagner '
+                           '(0.5 = 50% de chance de gagner, utilisez des points comme virgule) '
+                           ': ')
         return float(user_input)
     except ValueError:
         return 0.5
 
 
-def get_trials_number_input() -> int:
+def get_trials_number() -> int:
+    """
+    Convert the input from user to a maximum number of trials.
+    :return: The maximum number of trials converted or 50 if cannot convert the input.
+    """
     try:
-        user_input = input('Entrez votre nombre d\'essais maximum : ')
+        user_input = input('Entrez le nombre d\'essai maximum : ')
         return int(user_input)
     except ValueError:
         return 50
 
 
-def round05(number):
-    return round(number * 20 / 20)
+def round05(number) -> float:
+    """
+    Round a number to x.05
+    :param number: The number to round.
+    :return: The rounded number.
+    """
+    return round(number * 20) / 20
 
 
 # endregion
 
 # region Variables
 
-capital = get_capital_input()
-probability_win = get_probability_win_input()
-trials_number = get_trials_number_input()
-moneys = [capital]
+# Get user input and stock into variables
+capital: int = get_capital()
+win_probability: float = get_win_probability()
+trials_number: int = get_trials_number()
 
-i = 0
+min_capital_possible: float = 0.05
+
+# Add the start capital to an array that will contain all capitals variations in the program
+capital_variations: list[int] = [capital]
 
 # endregion
 
-# region Process stochastic
+# region Stochastic process
 
-while 0.05 < capital and i < trials_number:
-    i += 1
-    rand = random.randrange(100)
-    returned = capital * probability_win
+for i in range(trials_number - 1):
+    if capital < 0.05:
+        break
 
-    if probability_win >= rand / 100:
+    rand: int = random.randrange(100)
+    returned: float = capital * win_probability
+
+    if rand / 100 < win_probability:
         capital += returned
     else:
         capital -= returned
 
-    moneys.append(capital)
+    capital_variations.append(capital)
+
+capital = 0 if capital < 0.05 else capital
 
 # endregion
 
 # region Displays
 
-locale.setlocale(locale.LC_ALL, '')
-capital_formatted = locale.currency(round05(capital), grouping=True)
-max_money_formatted = locale.currency(round05(np.max(moneys)), grouping=True)
+print(capital_variations)
 
-print(moneys)
-plt.plot(0, len(moneys), moneys, color="blue")
-plt.title(
-    f'Votre capital est maintenant de {capital_formatted}\n'
-    f'et votre maximum a été de {max_money_formatted}'
-)
+plt.plot(np.arange(0, len(capital_variations)), np.array(capital_variations))
+
+# Format to currency
+locale.setlocale(locale.LC_ALL, '')
+start_capital = locale.currency(capital_variations[0], grouping=True)
+actual_capital = locale.currency(round05(capital), grouping=True)
+max_money = locale.currency(round05(np.max(capital_variations)), grouping=True)
+
+plt.title(f'Mise de départ : {start_capital}\n'
+          f'Probabilité de chance de gagner {win_probability * 100}%\n'
+          f'Votre capital est maintenant de {actual_capital}\n'
+          f'Votre capital a réussi à atteindre {max_money}')
 plt.ylabel('Gains en CHF')
 plt.xlabel('Jeu n°')
+
+# To not use scientific notation when big number
 plt.ticklabel_format(style="plain")
-plt.gcf().subplots_adjust(left=0.25)
-plt.gca().yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+# To not cut of labels of Y axis when big number
+plt.gcf().subplots_adjust(left=0.2, top=0.8)
+# Display Y axis with thousands separator
+plt.gca().yaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
+
 plt.show()
 
 # endregion

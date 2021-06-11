@@ -2,7 +2,7 @@
 
 Bonjour
 
-## How tu utiliser le programme
+## How to utiliser le programme
 
 Lancez le fichier stochastic.exe
 
@@ -30,16 +30,18 @@ Vous pouvez ne rien mettre, cela va utiliser les valeurs par défaut.
 Tant que le capital n'est pas en dessous de 0.05 (5 centimes) et que le nombre d'essais maximum n'est pas atteint, il va
 continuer de jouer pour devenir riche.
 
-La mise à chaque jeu dépend de la probabilité de gagner.
+La mise à chaque jeu dépend de la probabilité de gagner. Chaque mise en jeu correspond au capital actuel, multiplié par
+la probabilité de chance de gagner -> c · p.
 
 Exemple :
 
 - On commence avec 10 avec une probabilité de 30%, on va donc miser 3.- - et sûrement perdre :).
 - On a donc perdu 3.- et il nous reste 7.-.
-- On rejoue, mais cette fois-ci, on mise 2.1 (30% de 7.-). On gagne !
-- On a donc gagné 2.1 et il nous reste 5.1 (3 + 2.1).
+- On rejoue, mais cette fois-ci, on mise 2.10 (30% de 7.-). On gagne !
+- On a donc gagné 2.10 et on a maintenant 9.10 (7.- + 2.10).
 - Etc, etc...
 
-Ensuite le graphique s'affiche quand c'est fini avec, dans la console, un tableau qui représente le capital à chaque début de jeu.
+Ensuite le graphique s'affiche quand c'est fini avec, dans la console, un tableau qui représente le capital à chaque
+début de jeu.
 
 Ah, et c'est en Python.
